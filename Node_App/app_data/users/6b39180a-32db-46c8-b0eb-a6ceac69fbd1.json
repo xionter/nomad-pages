@@ -1,0 +1,25 @@
+{
+    "username": "aboba",
+    "remote_identity": "",
+    "profile": {
+        "name": "",
+        "lxmf": "",
+        "about": ""
+    },
+    "messages": [
+        {
+            "id": "30be515e-7b85-454e-9be9-fbd89423d53b",
+            "from": "anton",
+            "subject": "privet",
+            "message": "privet",
+            "time": 1777532715.5858681
+        },
+        {
+            "id": "89b3c8b1-c006-4c26-8d84-60d5965c4859",
+            "from": "admin",
+            "subject": "Welcome",
+            "message": "Welcome to the node.",
+            "time": 0.0
+        }
+    ]
+}

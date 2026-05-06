@@ -1,0 +1,18 @@
+{
+    "username": "anton",
+    "remote_identity": "",
+    "profile": {
+        "name": "",
+        "lxmf": "",
+        "about": ""
+    },
+    "messages": [
+        {
+            "id": "d6fa097b-4020-4817-85ae-69c56c50f4d0",
+            "from": "admin",
+            "subject": "Welcome",
+            "message": "Welcome to the node.",
+            "time": 0.0
+        }
+    ]
+}

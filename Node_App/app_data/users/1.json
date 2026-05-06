@@ -1,0 +1,10 @@
+{
+    "username": "admin",
+    "remote_identity": "",
+    "profile": {
+        "name": "Administrator",
+        "lxmf": "",
+        "about": "I'm the administrator of this node."
+    },
+    "messages": []
+}

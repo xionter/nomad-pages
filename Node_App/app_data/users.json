@@ -1,0 +1,26 @@
+{
+    "admin": {
+        "user_id": "832ddda1-c3d2-4b8f-907d-1dab50f6cf90",
+        "password": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+        "role": "user",
+        "enabled": true,
+        "admin": false,
+        "identity": ""
+    },
+    "aboba": {
+        "user_id": "6b39180a-32db-46c8-b0eb-a6ceac69fbd1",
+        "password": "1718c24b10aeb8099e3fc44960ab6949ab76a267352459f203ea1036bec382c2",
+        "role": "user",
+        "enabled": true,
+        "admin": false,
+        "identity": ""
+    },
+    "anton": {
+        "user_id": "1ed2c69d-000f-40ea-a6fd-287fac6fa05a",
+        "password": "1718c24b10aeb8099e3fc44960ab6949ab76a267352459f203ea1036bec382c2",
+        "role": "user",
+        "enabled": true,
+        "admin": false,
+        "identity": ""
+    }
+}

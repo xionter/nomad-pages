@@ -1,0 +1,18 @@
+{
+    "username": "admin",
+    "remote_identity": "",
+    "profile": {
+        "name": "",
+        "lxmf": "",
+        "about": ""
+    },
+    "messages": [
+        {
+            "id": "e7382d9a-2f04-49bb-a87a-9f7ce832e2ff",
+            "from": "admin",
+            "subject": "Welcome",
+            "message": "Welcome to the node.",
+            "time": 0.0
+        }
+    ]
+}
