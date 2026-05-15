@@ -1,0 +1,18 @@
+{
+    "old_tower": {
+        "title": "Старая башня",
+        "description": "Найдите табличку у башни и введите код, нанесенный рядом с датой постройки.",
+        "media": "Фото локации можно добавить в описание задания.",
+        "answer_hash": "a3c9de3153f0e322c540fd753d59269fd2856d1e83e9a1f56cf6e5fc830eacf3",
+        "points": 10,
+        "enabled": true
+    },
+    "river_gate": {
+        "title": "Речные ворота",
+        "description": "Осмотрите знак у спуска к воде. Код состоит из букв и двух цифр.",
+        "media": "Фотография ориентира: river_gate.jpg",
+        "answer_hash": "462d4e0f1b7e9629ce9f0cf8b774352d31111625c8f81a1eb050e2fae70590c9",
+        "points": 15,
+        "enabled": true
+    }
+}

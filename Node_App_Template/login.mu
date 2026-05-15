@@ -16,28 +16,27 @@ if not current_session:
         user_authed = core.authenticate_user(os.environ['field_username'], os.environ['field_password'])
         if user_authed:
             user = core.read_users()[os.environ['field_username']]
-            print('You are logged in. `!Session will expire in 30 minutes.`!')
-            print('`!`[<Continue>`:' + core.page_path + '/index.mu]`!')
+            print('Вход выполнен. `!Сессия действует 30 минут.`!')
+            print('`!`[<Перейти к заданиям>`:' + core.page_path + '/index.mu]`!')
             user_id = user['user_id']
             user_data = core.read_user_id(user_id)
             core.add_active_session(os.environ['link_id'], user_id, user_data, user['role'])
         elif not user_authed:
-            print('Login failure.')
-            print('`!`[<Go to Home>`:' + core.page_path + '/index.mu]`!')
+            print('Ошибка входа: имя, пароль или статус учетной записи не прошли проверку.')
+            print('`!`[<На главную>`:' + core.page_path + '/index.mu]`!')
 
 
     else:
-        print('`!Login`!')
+        print('`!Вход в систему`!')
         print()
-        print('Username: `B444`<username`>`b')
+        print('Имя пользователя: `B444`<username`>`b')
         print()
-        print('Password: `B444`<!|password`>`b')
+        print('Пароль: `B444`<!|password`>`b')
         print()
-        print('`!`[<Login>`:' + core.page_path + '/login.mu`username|password]`!')
+        print('`!`[<Войти>`:' + core.page_path + '/login.mu`username|password]`!')
     
 if current_session:
-        print('Already logged in.')
-        print('`!`[<Go to Home>`:' + core.page_path + '/index.mu]`!')
+        print('Вы уже вошли в систему.')
+        print('`!`[<К заданиям>`:' + core.page_path + '/index.mu]`!')
 
 core.footer()
-

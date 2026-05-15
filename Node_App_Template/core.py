@@ -8,18 +8,16 @@ import hashlib
 page_path = '/page/Node_App_Template'
 
 # Directory to keep data such as user files, messages, etc.
-data_directory = '/home/tushonochki/.nomadnetwork/storage/pages/Node_App_Template/app_data/'
+data_directory = os.path.join(os.path.dirname(__file__), 'app_data') + '/'
 
 # Title of your node page, appears on all pages
-title = '`!Node App Template`! \n A template to make really cool NomadNet sites'
+title = '`!Городской квест`! \n Игровая платформа поверх Reticulum и NomadNet'
 
 # Test that shows up at foot of all pages
-footer_text = 'footer text here. other cool links.'
+footer_text = 'Файловая игровая платформа: команды, задания, ответы и итоги.'
 
 # Links to appear in the header
-header_links = [
-    '`!`[Example`:' + page_path + '/example.mu]`!',
-    ]
+header_links = []
 
 # Use local time or UTC
 use_local_time = False
@@ -28,10 +26,10 @@ use_local_time = False
 registration_enabled = True
 
 # Welcome message for new users
-welcome_message = 'Welcome to the node.'
+welcome_message = 'Добро пожаловать на платформу городского квеста.'
 
 # Default role for new users. A role can be usewd for anything.
-default_role = 'user'
+default_role = 'player'
 
 # Functionms below.
 ########### CHANGE ANYTHING BELOW HERE AT YOUR OWN RISK ##############
@@ -45,6 +43,202 @@ def read_users():
      with open(data_directory + 'users.json', 'r') as users_file:
         users = json.load(users_file)
         return users
+
+def read_json_file(filename, default_value):
+    path = data_directory + filename
+    try:
+        with open(path, 'r') as json_file:
+            return json.load(json_file)
+    except:
+        return default_value
+
+def write_json_file(filename, data):
+    with open(data_directory + filename, "w") as json_file:
+        json_file.write(json.dumps(data, indent=4, ensure_ascii=False))
+
+def read_teams():
+    return read_json_file('teams.json', {})
+
+def write_teams(teams):
+    write_json_file('teams.json', teams)
+
+def read_tasks():
+    return read_json_file('tasks.json', default_tasks())
+
+def write_tasks(tasks):
+    write_json_file('tasks.json', tasks)
+
+def read_results():
+    return read_json_file('results.json', {})
+
+def write_results(results):
+    write_json_file('results.json', results)
+
+def read_game_state():
+    return read_json_file('game_state.json', {"status": "preparing", "started_at": 0, "ends_at": 0})
+
+def write_game_state(state):
+    write_json_file('game_state.json', state)
+
+def default_tasks():
+    return {
+        "old_tower": {
+            "title": "Старая башня",
+            "description": "Найдите табличку у башни и введите код, нанесенный рядом с датой постройки.",
+            "media": "Фото локации можно добавить в описание задания.",
+            "answer_hash": hashlib.sha256("TOWER42".encode('utf-8')).hexdigest(),
+            "points": 10,
+            "enabled": True
+        },
+        "river_gate": {
+            "title": "Речные ворота",
+            "description": "Осмотрите знак у спуска к воде. Код состоит из букв и двух цифр.",
+            "media": "Фотография ориентира: river_gate.jpg",
+            "answer_hash": hashlib.sha256("RIVER17".encode('utf-8')).hexdigest(),
+            "points": 15,
+            "enabled": True
+        }
+    }
+
+def normalize_answer(answer):
+    return answer.strip().upper()
+
+def is_organizer(session):
+    if not session:
+        return False
+    user = read_users().get(session['username'])
+    if user is None:
+        return False
+    return user.get('admin') == True or user.get('role') == 'organizer'
+
+def find_user_team(username):
+    teams = read_teams()
+    for team_id in teams:
+        team = teams[team_id]
+        if username == team.get('captain') or username in team.get('members', []):
+            return team_id, team
+    return None, None
+
+def create_team(captain_username, team_name):
+    teams = read_teams()
+    current_team_id, current_team = find_user_team(captain_username)
+    if current_team:
+        return current_team_id, current_team
+    team_id = str(uuid.uuid4())
+    invite_token = str(uuid.uuid4())
+    teams[team_id] = {
+        "id": team_id,
+        "name": team_name,
+        "captain": captain_username,
+        "members": [captain_username],
+        "invite_token": invite_token,
+        "approved": False,
+        "created_at": time.time()
+    }
+    write_teams(teams)
+    return team_id, teams[team_id]
+
+def join_team_by_token(username, token):
+    teams = read_teams()
+    for team_id in teams:
+        team = teams[team_id]
+        if team.get('invite_token') == token:
+            if username not in team.get('members', []):
+                team['members'].append(username)
+                write_teams(teams)
+            return team_id, team
+    return None, None
+
+def set_team_approved(team_id, approved):
+    teams = read_teams()
+    if team_id in teams:
+        teams[team_id]['approved'] = approved
+        write_teams(teams)
+        return True
+    return False
+
+def upsert_task(task_id, title, description, media, answer, points, enabled):
+    tasks = read_tasks()
+    safe_task_id = task_id.strip()
+    if safe_task_id == '':
+        safe_task_id = str(uuid.uuid4())
+    try:
+        task_points = int(points)
+    except:
+        task_points = 0
+    tasks[safe_task_id] = {
+        "title": title,
+        "description": description,
+        "media": media,
+        "answer_hash": hashlib.sha256(normalize_answer(answer).encode('utf-8')).hexdigest(),
+        "points": task_points,
+        "enabled": enabled
+    }
+    write_tasks(tasks)
+    return safe_task_id
+
+def delete_task(task_id):
+    tasks = read_tasks()
+    if task_id in tasks:
+        del tasks[task_id]
+        write_tasks(tasks)
+        return True
+    return False
+
+def set_game_status(status):
+    state = read_game_state()
+    state['status'] = status
+    if status == 'running':
+        state['started_at'] = time.time()
+    if status == 'finished':
+        state['ends_at'] = time.time()
+    write_game_state(state)
+
+def get_leaderboard():
+    teams = read_teams()
+    results = read_results()
+    rows = []
+    for team_id in teams:
+        progress = results.get(team_id, {"completed": {}, "score": 0, "finished_at": 0})
+        rows.append({
+            "team": teams[team_id]['name'],
+            "score": progress.get('score', 0),
+            "completed": len(progress.get('completed', {})),
+            "finished_at": progress.get('finished_at', 0)
+        })
+    return sorted(rows, key=lambda row: (-row['score'], row['finished_at'] if row['finished_at'] > 0 else 9999999999))
+
+def get_team_progress(team_id):
+    results = read_results()
+    return results.get(team_id, {"completed": {}, "wrong": {}, "score": 0, "finished_at": 0})
+
+def submit_task_answer(team_id, username, task_id, answer):
+    tasks = read_tasks()
+    if task_id not in tasks or not tasks[task_id].get('enabled', True):
+        return False, "Задание недоступно."
+    state = read_game_state()
+    if state.get('status') != 'running':
+        return False, "Игра не запущена. Ввод кодов закрыт."
+    results = read_results()
+    progress = results.get(team_id, {"completed": {}, "wrong": {}, "score": 0, "finished_at": 0})
+    if task_id in progress.get('completed', {}):
+        return True, "Задание уже выполнено."
+    answer_hash = hashlib.sha256(normalize_answer(answer).encode('utf-8')).hexdigest()
+    if answer_hash == tasks[task_id]['answer_hash']:
+        progress['completed'][task_id] = {"user": username, "time": time.time()}
+        progress['score'] = progress.get('score', 0) + int(tasks[task_id].get('points', 0))
+        enabled_tasks = [task for task in tasks if tasks[task].get('enabled', True)]
+        if len(progress['completed']) >= len(enabled_tasks):
+            progress['finished_at'] = time.time()
+        results[team_id] = progress
+        write_results(results)
+        return True, "Верно. Задание засчитано команде."
+    wrong = progress.get('wrong', {})
+    wrong[task_id] = wrong.get(task_id, 0) + 1
+    progress['wrong'] = wrong
+    results[team_id] = progress
+    write_results(results)
+    return False, "Неверно. Проверьте код и повторите попытку позже."
 
 def read_user_id(user_id):
     with open(data_directory + 'users/' + user_id + '.json', 'r') as user_file:
@@ -201,10 +395,6 @@ def delete_user(username):
     all_users = read_users()
     user_id = all_users[username]['user_id']
     os.remove(data_directory + 'users/' + user_id + '.json')
-    try:
-        os.remove(data_directory + '/user_blogs/' + username + '.json')
-    except:
-        pass
     del all_users[username]
     user_object = json.dumps(all_users, indent=4)
     # Write both to disk 
@@ -239,45 +429,6 @@ def update_password(username, password):
     user_object = json.dumps(all_users, indent=4)
     with open(data_directory + 'users.json', "w") as user_file:
         user_file.write(user_object)
-
-def read_user_messages(user_id):
-    user_data = read_user_id(user_id)
-    return user_data['messages']
-
-def delete_user_message(user_id, message_id):
-    user_data = read_user_id(user_id)
-    new_list = []
-    for message in user_data['messages']:
-        if message_id == message['id']:
-            pass
-        elif message_id != message['id']:
-            new_list.append(message)
-    user_data['messages'] = new_list
-    user_object = json.dumps(user_data, indent=4)
-    with open(data_directory + 'users/' + user_id + '.json', "w") as user_file:
-        user_file.write(user_object)
-    print('Message deleted.')
-    
-
-def add_user_message(username, sending_user, subject, message):
-    all_users = read_users()
-    try:
-        user_id = all_users[username]['user_id']
-        user_data = read_user_id(user_id)
-        user_data['messages'].insert(0, {'id': str(uuid.uuid4()),
-                                         'from': sending_user,
-                                         'subject': subject,
-                                         'message': message,
-                                         'time': time.time()
-                                         })
-        user_object = json.dumps(user_data, indent=4)
-        with open(data_directory + 'users/' + user_id + '.json', "w") as user_file:
-            user_file.write(user_object)
-        print('Message sent.')
-        
-    except:
-        print('Error sending message.')
-    
 
 def check_identity(identity):
     all_users = read_users()
@@ -318,25 +469,29 @@ def convert_time(time):
 
 
 def header(session):
-    auth_link = '`!`[Login`:' + page_path + '/login.mu]`!'
-    profile_link = ''
-    if registration_enabled:
-        profile_link = '`!`[Register`:' + page_path + '/register.mu]`! | '
-    message_link = ''
-    link_string = '| '
-    for link in header_links:
-        link_string = link_string  + link + ' |'
+    links = ['`!`[Главная`:' + page_path + '/index.mu]`!']
     if session:
-        auth_link = '`!`[Logout`:' + page_path + '/logout.mu]`!'
-        profile_link = '| `!`[Profile`:' + page_path + '/my_profile.mu]`! | '
-        message_link = ' `!`[Messages`:' + page_path + '/messages.mu]`!'
+        if is_organizer(session):
+            links.append('`!`[Обзор`:' + page_path + '/manage_users.mu]`!')
+            links.append('`!`[Команды`:' + page_path + '/manage_users.mu`view=teams]`!')
+            links.append('`!`[Задания`:' + page_path + '/manage_users.mu`view=tasks]`!')
+            links.append('`!`[Участники`:' + page_path + '/manage_users.mu`view=users]`!')
+        else:
+            links.append('`!`[Задания`:' + page_path + '/index.mu]`!')
+            links.append('`!`[Команда`:' + page_path + '/team.mu]`!')
+        links.append('`!`[Профиль`:' + page_path + '/my_profile.mu]`!')
+        links.append('`!`[Выход`:' + page_path + '/logout.mu]`!')
+    else:
+        if registration_enabled:
+            links.append('`!`[Регистрация`:' + page_path + '/register.mu]`!')
+        links.append('`!`[Вход`:' + page_path + '/login.mu]`!')
 ##    print(os.environ)
     print('#!c=0')
     print('''
 -
 `c''' + title + '''
 -
-`!`[Home`:''' + page_path + '''/index.mu]`! ''' + link_string  + message_link + ''' ''' + profile_link + auth_link + ''' | ''' + get_time() + '''
+''' + ' | '.join(links) + ''' | ''' + get_time() + '''
 `a
 -
 ''')

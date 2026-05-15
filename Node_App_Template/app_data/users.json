@@ -2,15 +2,15 @@
     "admin": {
         "user_id": "832ddda1-c3d2-4b8f-907d-1dab50f6cf90",
         "password": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
-        "role": "user",
+        "role": "organizer",
         "enabled": true,
-        "admin": false,
+        "admin": true,
         "identity": ""
     },
     "aboba": {
         "user_id": "6b39180a-32db-46c8-b0eb-a6ceac69fbd1",
         "password": "1718c24b10aeb8099e3fc44960ab6949ab76a267352459f203ea1036bec382c2",
-        "role": "user",
+        "role": "player",
         "enabled": true,
         "admin": false,
         "identity": ""
@@ -18,7 +18,15 @@
     "anton": {
         "user_id": "1ed2c69d-000f-40ea-a6fd-287fac6fa05a",
         "password": "1718c24b10aeb8099e3fc44960ab6949ab76a267352459f203ea1036bec382c2",
-        "role": "user",
+        "role": "player",
+        "enabled": true,
+        "admin": false,
+        "identity": ""
+    },
+    "nezeri": {
+        "user_id": "192fef18-b537-43d5-a78a-27d385bcfb6f",
+        "password": "0697d66552eb05bd33e8f36f0d7a15bb6d17c6ffb0ca1aa371b6ba393e6ae178",
+        "role": "player",
         "enabled": true,
         "admin": false,
         "identity": ""

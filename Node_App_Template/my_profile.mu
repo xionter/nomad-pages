@@ -17,33 +17,39 @@ if current_session:
         user = core.read_users()[current_session['username']]
         admin_links = ''
         if user['admin']:
-            admin_links = '\n`!`[<Manage Users>`:' + core.page_path + '/manage_users.mu]`!\n'
-        print('`!Edit Profile`!')
+            admin_links = '\n`!`[<Панель организатора>`:' + core.page_path + '/manage_users.mu]`!\n'
+        print('`!Профиль участника`!')
         print(admin_links)
-        print('Update Password: `B444`<!|password`>`b')
-        print('`!`[<Update Password>`:' + core.page_path + '/my_profile.mu`password|new_password=true]`!')
+        print('Новый пароль: `B444`<!|password`>`b')
+        print('`!`[<Обновить пароль>`:' + core.page_path + '/my_profile.mu`password|new_password=true]`!')
         print()
-        print('Name:            `B444`<name`' + user_data['profile']['name'] + '>`b')
+        print('Имя:             `B444`<name`' + user_data['profile']['name'] + '>`b')
         print()
-        print('About:           `B444`<about`' + user_data['profile']['about'] + '>`b')
+        print('О себе:          `B444`<about`' + user_data['profile']['about'] + '>`b')
         print()
-        print('LXMF Address:    `B444`<lxmf`' + user_data['profile']['lxmf'] + '>`b')
+        print('LXMF адрес:      `B444`<lxmf`' + user_data['profile']['lxmf'] + '>`b')
 
         print()
-        print('`!`[<Save>`:' + core.page_path + '/my_profile.mu`name|lxmf|about|save=true]`!')
-        print('`Ff00`!`[<Delete Account>`:' + core.page_path + '/delete_account.mu]`!`f')
-        print('`!`[<Manage Identity>`:' + core.page_path + '/identity.mu]`!')
+        team_id, team = core.find_user_team(current_session['username'])
+        if team:
+            print('Команда: ' + team['name'] + ' | капитан: ' + team['captain'])
+            print('Токен приглашения: ' + team['invite_token'])
+        else:
+            print('Команда не выбрана. Создать команду или вступить по токену можно на главной странице.')
+        print()
+        print('`!`[<Сохранить>`:' + core.page_path + '/my_profile.mu`name|lxmf|about|save=true]`!')
+        print('`!`[<Идентичность Reticulum>`:' + core.page_path + '/identity.mu]`!')
     elif 'var_save' in os.environ:
         core.update_profile(core.get_current_session(os.environ['link_id']), os.environ)
-        print('Saved.')
-        print('`!`[<Back>`:' + core.page_path + '/my_profile.mu]`!')
+        print('Профиль сохранен.')
+        print('`!`[<Назад>`:' + core.page_path + '/my_profile.mu]`!')
     elif 'var_new_password' in os.environ:
         core.update_password(current_session['username'], os.environ['field_password'])
-        print('Password updated.')
-        print('`!`[<Back>`:' + core.page_path + '/my_profile.mu]`!')
+        print('Пароль обновлен.')
+        print('`!`[<Назад>`:' + core.page_path + '/my_profile.mu]`!')
     
 if not current_session:
-    print('Not Authorized!')
-    print('`!`[<Go to Home>`:' + core.page_path + '/index.mu]`!')
+    print('Требуется вход в систему.')
+    print('`!`[<На главную>`:' + core.page_path + '/index.mu]`!')
 
 core.footer()

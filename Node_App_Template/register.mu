@@ -16,23 +16,23 @@ if not current_session:
     if 'field_username' in os.environ and 'field_password' in os.environ and 'field_password2' in os.environ and not current_session:
         try:
             core.read_users()[os.environ['field_username']]
-            print('Username already used.')
+            print('Имя пользователя уже занято.')
         except:
             if os.environ['field_password'] != os.environ['field_password2']:
-                print('Password mismatch, try again.')
-                print('`!`[<Try Again>`:' + core.page_path + '/register.mu]`!')
+                print('Пароль и подтверждение не совпадают.')
+                print('`!`[<Повторить>`:' + core.page_path + '/register.mu]`!')
             elif os.environ['field_password'] == '' or os.environ['field_password2'] == '':
-                print('Password blank, try again.')
-                print('`!`[<Try Again>`:' + core.page_path + '/register.mu]`!')
+                print('Пароль не может быть пустым.')
+                print('`!`[<Повторить>`:' + core.page_path + '/register.mu]`!')
             elif len(os.environ['field_password']) < 8 or len(os.environ['field_password2']) < 8:
-                print('Password too short, must be at least 8 characters. Try again.')
-                print('`!`[<Try Again>`:' + core.page_path + '/register.mu]`!')
+                print('Пароль должен быть не короче 8 символов.')
+                print('`!`[<Повторить>`:' + core.page_path + '/register.mu]`!')
             elif len(os.environ['field_username']) < 4:
-                print('Username too short, must be at least 4 characters. Try again.')
-                print('`!`[<Try Again>`:' + core.page_path + '/register.mu]`!')
+                print('Имя пользователя должно быть не короче 4 символов.')
+                print('`!`[<Повторить>`:' + core.page_path + '/register.mu]`!')
             elif os.environ['field_password'] == os.environ['field_password2']:
-                print('You are now registered!')
-                print('`!`[<Go to Login>`:' + core.page_path + '/login.mu]`!')
+                print('Регистрация завершена. Теперь можно войти и создать или принять приглашение в команду.')
+                print('`!`[<Войти>`:' + core.page_path + '/login.mu]`!')
                 try:
                     core.write_new_user(os.environ['field_username'], os.environ['field_password'])
                 except Exception as e:
@@ -41,28 +41,27 @@ if not current_session:
     # No registration variables, show sign up page.
     else:
         if core.registration_enabled:
-            print('`!Register a new account`!')
+            print('`!Регистрация игрока`!')
             print()
-            print('Username must be at least 4 characters, password must be at least 8 characters.')
-            print('By registering, you agree to the `!`[<Terms of Service>`:' + core.page_path + '/terms_of_service.mu]`!.')
+            print('Имя пользователя должно быть не короче 4 символов, пароль - не короче 8 символов.')
+            print('После регистрации капитан может создать команду, а рядовой участник - вступить по токен-ссылке.')
             print()
-            print('Username        : `B444`<username`>`b')
+            print('Имя пользователя: `B444`<username`>`b')
             print()
-            print('Password        : `B444`<!|password`>`b')
+            print('Пароль          : `B444`<!|password`>`b')
             print()
-            print('Confirm Password: `B444`<!|password2`>`b')
+            print('Повтор пароля   : `B444`<!|password2`>`b')
             print()
-            print('`!`[<Register>`:' + core.page_path + '/register.mu`username|password|password2]`!')
+            print('`!`[<Зарегистрироваться>`:' + core.page_path + '/register.mu`username|password|password2]`!')
         if not core.registration_enabled:
-            print('Registration disabled.')
-            print('`!`[<Back>`:' + core.page_path + '/index.mu]`!')
+            print('Регистрация отключена организатором.')
+            print('`!`[<Назад>`:' + core.page_path + '/index.mu]`!')
 
     
 if current_session:
-        print('Already registered and logged in!')
-        print('`!`[<Go to Home>`:' + core.page_path + '/index.mu]`!')
+        print('Вы уже зарегистрированы и вошли в систему.')
+        print('`!`[<К заданиям>`:' + core.page_path + '/index.mu]`!')
 
 core.footer()
-
 
 

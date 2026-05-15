@@ -1,0 +1,19 @@
+{
+    "9ae124de-c0e0-48ab-a177-f79004cbbac7": {
+        "completed": {
+            "old_tower": {
+                "user": "nezeri",
+                "time": 1778873725.5295727
+            },
+            "river_gate": {
+                "user": "nezeri",
+                "time": 1778873747.7474716
+            }
+        },
+        "wrong": {
+            "old_tower": 1
+        },
+        "score": 25,
+        "finished_at": 1778873747.7474775
+    }
+}

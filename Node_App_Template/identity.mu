@@ -18,33 +18,33 @@ core.header(current_session)
 # If user is logged in
 if current_session:
     if 'remote_identity' in os.environ and 'var_add_identity' not in os.environ and 'var_delete_identity' not in os.environ:
-        print('Your identity is: ' + os.environ['remote_identity'])
+        print('Ваша текущая Reticulum/NomadNet-идентичность: ' + os.environ['remote_identity'])
         print()
-        print('`!`[<Add Identity>`:' + core.page_path + '/identity.mu`add_identity=true]`! `Ff00`!`[<Remove Identity>`:' + core.page_path + '/identity.mu`delete_identity=true]`!`f')
+        print('`!`[<Привязать>`:' + core.page_path + '/identity.mu`add_identity=true]`! `Ff00`!`[<Отвязать>`:' + core.page_path + '/identity.mu`delete_identity=true]`!`f')
 
         
     if 'remote_identity' in os.environ and 'var_add_identity' in os.environ:
-        print('Your identity is: ' + os.environ['remote_identity'])
-        print('Associated this identity with your account.')
-        print('`!`[<Go back.>`:' + core.page_path + '/my_profile.mu]`!')
+        print('Ваша текущая Reticulum/NomadNet-идентичность: ' + os.environ['remote_identity'])
+        print('Идентичность привязана к аккаунту. При следующем подключении система сможет создать сессию автоматически.')
+        print('`!`[<Назад>`:' + core.page_path + '/my_profile.mu]`!')
         core.add_identity(current_session['username'], os.environ['remote_identity'])
 
     elif 'remote_identity' in os.environ and 'var_delete_identity' in os.environ:
-        print('Your identity is: ' + os.environ['remote_identity'])
-        print('Removed this identity from your account.')
-        print('`!`[<Go back.>`:' + core.page_path + '/my_profile.mu]`!')
+        print('Ваша текущая Reticulum/NomadNet-идентичность: ' + os.environ['remote_identity'])
+        print('Идентичность отвязана от аккаунта.')
+        print('`!`[<Назад>`:' + core.page_path + '/my_profile.mu]`!')
         core.delete_identity(current_session['username'], os.environ['remote_identity'])
         
     if 'remote_identity' not in os.environ:
-        print('Not identified.')
-        print('`!`[<Go back.>`:' + core.page_path + '/my_profile.mu]`!')
+        print('NomadNet не передал remote_identity для текущего подключения.')
+        print('`!`[<Назад>`:' + core.page_path + '/my_profile.mu]`!')
     
 # If user is logged out
 if not current_session:
     if 'remote_identity' in os.environ:
-        print('Your identity is: ' + os.environ['remote_identity'])
+        print('Ваша текущая Reticulum/NomadNet-идентичность: ' + os.environ['remote_identity'])
     if 'remote_identity' not in os.environ:
-        print('Not identified.')
+        print('NomadNet не передал remote_identity для текущего подключения.')
 
 # Display footer text
 core.footer()
