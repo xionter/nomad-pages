@@ -12,10 +12,59 @@ data_directory = os.path.join(os.path.dirname(__file__), 'app_data') + '/'
 title = '`!Городской квест`! \n Игровая платформа поверх Reticulum и NomadNet'
 footer_text = 'Файловая игровая платформа: команды, задания, ответы и итоги.'
 
+color_primary = '0ff'
+color_secondary = '5af'
+color_success = '5f8'
+color_warning = 'fc5'
+color_danger = 'f55'
+color_dim = '66a'
+color_input_bg = '224'
+
 use_local_time = False
 registration_enabled = True
 welcome_message = 'Добро пожаловать на платформу городского квеста.'
 default_role = 'player'
+
+def fg(text, color=color_primary):
+    return '`F' + color + text + '`f'
+
+def bg(text, color=color_input_bg):
+    return '`B' + color + text + '`b'
+
+def strong(text):
+    return '`!' + text + '`!'
+
+def heading(text):
+    return fg(strong(text), color_primary)
+
+def subheading(text):
+    return fg(strong(text), color_secondary)
+
+def muted(text):
+    return '`g70' + text + '`f'
+
+def status_badge(text, color=color_secondary):
+    return '`F000`B' + color + ' ' + text + ' `b`f'
+
+def action(label, target, color=color_primary):
+    return '`F' + color + '`!`[<' + label + '>`:' + target + ']`!`f'
+
+def danger_action(label, target):
+    return action(label, target, color_danger)
+
+def field(name, value='', width=''):
+    if width != '':
+        field_markup = '`<' + width + '|' + name + '`' + value + '>'
+    else:
+        field_markup = '`<' + name + '`' + value + '>'
+    return bg(field_markup)
+
+def password_field(name, width=''):
+    if width != '':
+        field_markup = '`<!' + width + '|' + name + '`>'
+    else:
+        field_markup = '`<!|' + name + '`>'
+    return bg(field_markup)
 
 def read_active_sessions():
     with open(data_directory + 'active_sessions.json', 'r') as session_file:
@@ -447,33 +496,37 @@ def get_time():
     return datetime.datetime.utcnow().strftime("%H:%M %m/%d/%Y")
 
 def header(session):
-    links = ['`!`[Главная`:' + page_path + '/index.mu]`!']
+    links = [action('Главная', page_path + '/index.mu')]
     if session:
         if is_organizer(session):
-            links.append('`!`[Обзор`:' + page_path + '/manage_users.mu]`!')
-            links.append('`!`[Команды`:' + page_path + '/manage_users.mu`view=teams]`!')
-            links.append('`!`[Задания`:' + page_path + '/manage_users.mu`view=tasks]`!')
-            links.append('`!`[Лидерборд`:' + page_path + '/leaderboard.mu]`!')
-            links.append('`!`[Участники`:' + page_path + '/manage_users.mu`view=users]`!')
+            links.append(action('Обзор', page_path + '/manage_users.mu', color_secondary))
+            links.append(action('Команды', page_path + '/manage_users.mu`view=teams', color_secondary))
+            links.append(action('Задания', page_path + '/manage_users.mu`view=tasks', color_secondary))
+            links.append(action('Лидерборд', page_path + '/leaderboard.mu', color_secondary))
+            links.append(action('Участники', page_path + '/manage_users.mu`view=users', color_secondary))
         else:
-            links.append('`!`[Задания`:' + page_path + '/index.mu]`!')
-            links.append('`!`[Команда`:' + page_path + '/team.mu]`!')
-            links.append('`!`[Лидерборд`:' + page_path + '/leaderboard.mu]`!')
-        links.append('`!`[Профиль`:' + page_path + '/my_profile.mu]`!')
-        links.append('`!`[Выход`:' + page_path + '/logout.mu]`!')
+            links.append(action('Задания', page_path + '/index.mu', color_secondary))
+            links.append(action('Команда', page_path + '/team.mu', color_secondary))
+            links.append(action('Лидерборд', page_path + '/leaderboard.mu', color_secondary))
+        links.append(action('Профиль', page_path + '/my_profile.mu', color_warning))
+        links.append(action('Выход', page_path + '/logout.mu', color_danger))
     else:
         if registration_enabled:
-            links.append('`!`[Регистрация`:' + page_path + '/register.mu]`!')
-        links.append('`!`[Вход`:' + page_path + '/login.mu]`!')
+            links.append(action('Регистрация', page_path + '/register.mu', color_secondary))
+        links.append(action('Вход', page_path + '/login.mu', color_warning))
     print('#!c=0')
+    print('#!fg=ddd')
+    print('#!bg=000')
     print('''
--
-`c''' + title + '''
--
+`c`F0ff
+-=
+''' + title + '''
+=-
+`f
 ''' + ' | '.join(links) + ''' | ''' + get_time() + '''
 `a
 -
 ''')
 
 def footer():
-    print('-\n`c' + footer_text)
+    print('-\n`c' + muted(footer_text) + '  ' + status_badge('NomadNet', color_dim))

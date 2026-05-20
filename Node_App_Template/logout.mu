@@ -13,13 +13,13 @@ core.header(current_session)
 
 if current_session:
     core.deauthenticate_user(os.environ['link_id'])
-    print('`!Выход`!')
+    print(core.heading('Выход'))
     print()
-    print('Сессия завершена.')
+    print(core.fg('Сессия завершена.', core.color_success))
 
 if not current_session:
     print('Вы уже вышли из системы.')
 
-print('`!`[<Продолжить>`:' + core.page_path + '/index.mu]`!')
+print(core.action('Продолжить', core.page_path + '/index.mu'))
     
 core.footer()
