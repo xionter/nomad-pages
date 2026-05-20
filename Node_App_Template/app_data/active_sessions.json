@@ -1,8 +1,26 @@
 {
-    "8cf9da55d1f40791082ae2d07ce8f00f": {
-        "user_id": "192fef18-b537-43d5-a78a-27d385bcfb6f",
-        "username": "nezeri",
-        "role": "player",
-        "time": 1778874947.2642891
+    "6c327936473ef6a281f83e943afb10ba": {
+        "user_id": "832ddda1-c3d2-4b8f-907d-1dab50f6cf90",
+        "username": "admin",
+        "role": "organizer",
+        "time": 1779295679.0415874
+    },
+    "ebca392154e98375a4444d8061eb5dad": {
+        "user_id": "832ddda1-c3d2-4b8f-907d-1dab50f6cf90",
+        "username": "admin",
+        "role": "organizer",
+        "time": 1779295894.0829632
+    },
+    "86c0c5801b1f0b16bf8637651ce8bf2d": {
+        "user_id": "832ddda1-c3d2-4b8f-907d-1dab50f6cf90",
+        "username": "admin",
+        "role": "organizer",
+        "time": 1779296173.5799057
+    },
+    "6a7b8e27f50aa452249ad1d88c169da6": {
+        "user_id": "832ddda1-c3d2-4b8f-907d-1dab50f6cf90",
+        "username": "admin",
+        "role": "organizer",
+        "time": 1779296383.1563385
     }
 }

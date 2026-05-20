@@ -35,18 +35,15 @@ state = core.read_game_state()
 tasks = core.read_tasks()
 
 if core.is_organizer(current_session):
-    print('`!Панель организатора`!')
+    print('`!Обзор`!')
     print()
     print('Статус игры: ' + state.get('status', 'preparing'))
-    print('`!`[<Команды и пользователи>`:' + core.page_path + '/manage_users.mu]`!')
+    print('`!`[<Управление>`:' + core.page_path + '/manage_users.mu]`!')
     print()
     print('`!Задания игры`!')
     for task_id in tasks:
         task = tasks[task_id]
-        status = 'доступно'
-        if not task.get('enabled', True):
-            status = 'скрыто'
-        print('- `!' + task['title'] + '`! [' + status + '] ' + str(task.get('points', 0)) + ' очков')
+        print('- `!' + task['title'] + '`! ' + str(task.get('points', 0)) + ' очков')
         print('  ' + task['description'])
     core.footer()
     raise SystemExit
@@ -93,7 +90,9 @@ if state.get('status') == 'finished':
     print()
     print('Итоговая таблица результатов:')
     for row in core.get_leaderboard():
-        print('- ' + row['team'] + ' | очки: ' + str(row['score']) + ' | заданий: ' + str(row['completed']))
+        print('- ' + row['team'] + ' | очки: ' + str(row['score']) + ' | заданий: ' + str(row['completed']) + '/' + str(row['total']) + ' | время: ' + core.format_duration(row.get('elapsed', 0)))
+    print()
+    print('`!`[<Полный лидерборд>`:' + core.page_path + '/leaderboard.mu]`!')
     core.footer()
     raise SystemExit
 
@@ -125,7 +124,6 @@ if 'var_task' in os.environ:
         print()
         print(task['description'])
         print()
-        print('Медиа: ' + task.get('media', 'не задано'))
         print('Очки: ' + str(task.get('points', 0)))
         print()
         if done:
@@ -145,8 +143,6 @@ print()
 
 for task_id in tasks:
     task = tasks[task_id]
-    if not task.get('enabled', True):
-        continue
     done = task_id in progress.get('completed', {})
     marker = '[ ]'
     if done:

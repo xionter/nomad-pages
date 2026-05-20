@@ -1,0 +1,18 @@
+{
+    "username": "Ivan",
+    "remote_identity": "",
+    "profile": {
+        "name": "",
+        "lxmf": "",
+        "about": ""
+    },
+    "messages": [
+        {
+            "id": "166c57a9-9b89-4965-8b1e-66c5b0461b85",
+            "from": "admin",
+            "subject": "Welcome",
+            "message": "\u0414\u043e\u0431\u0440\u043e \u043f\u043e\u0436\u0430\u043b\u043e\u0432\u0430\u0442\u044c \u043d\u0430 \u043f\u043b\u0430\u0442\u0444\u043e\u0440\u043c\u0443 \u0433\u043e\u0440\u043e\u0434\u0441\u043a\u043e\u0433\u043e \u043a\u0432\u0435\u0441\u0442\u0430.",
+            "time": 0.0
+        }
+    ]
+}

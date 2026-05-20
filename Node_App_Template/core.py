@@ -7,32 +7,15 @@ import hashlib
 
 page_path = '/page/Node_App_Template'
 
-# Directory to keep data such as user files, messages, etc.
 data_directory = os.path.join(os.path.dirname(__file__), 'app_data') + '/'
 
-# Title of your node page, appears on all pages
 title = '`!Городской квест`! \n Игровая платформа поверх Reticulum и NomadNet'
-
-# Test that shows up at foot of all pages
 footer_text = 'Файловая игровая платформа: команды, задания, ответы и итоги.'
 
-# Links to appear in the header
-header_links = []
-
-# Use local time or UTC
 use_local_time = False
-
-# Enable or disable user registration
 registration_enabled = True
-
-# Welcome message for new users
 welcome_message = 'Добро пожаловать на платформу городского квеста.'
-
-# Default role for new users. A role can be usewd for anything.
 default_role = 'player'
-
-# Functionms below.
-########### CHANGE ANYTHING BELOW HERE AT YOUR OWN RISK ##############
 
 def read_active_sessions():
     with open(data_directory + 'active_sessions.json', 'r') as session_file:
@@ -85,18 +68,16 @@ def default_tasks():
         "old_tower": {
             "title": "Старая башня",
             "description": "Найдите табличку у башни и введите код, нанесенный рядом с датой постройки.",
-            "media": "Фото локации можно добавить в описание задания.",
+            "answer": "TOWER42",
             "answer_hash": hashlib.sha256("TOWER42".encode('utf-8')).hexdigest(),
-            "points": 10,
-            "enabled": True
+            "points": 10
         },
         "river_gate": {
             "title": "Речные ворота",
             "description": "Осмотрите знак у спуска к воде. Код состоит из букв и двух цифр.",
-            "media": "Фотография ориентира: river_gate.jpg",
+            "answer": "RIVER17",
             "answer_hash": hashlib.sha256("RIVER17".encode('utf-8')).hexdigest(),
-            "points": 15,
-            "enabled": True
+            "points": 15
         }
     }
 
@@ -157,7 +138,7 @@ def set_team_approved(team_id, approved):
         return True
     return False
 
-def upsert_task(task_id, title, description, media, answer, points, enabled):
+def upsert_task(task_id, title, description, answer, points):
     tasks = read_tasks()
     safe_task_id = task_id.strip()
     if safe_task_id == '':
@@ -166,13 +147,21 @@ def upsert_task(task_id, title, description, media, answer, points, enabled):
         task_points = int(points)
     except:
         task_points = 0
+    answer_value = answer.strip()
+    answer_hash = ''
+    if answer.strip() != '':
+        answer_hash = hashlib.sha256(normalize_answer(answer).encode('utf-8')).hexdigest()
+    elif safe_task_id in tasks:
+        answer_value = tasks[safe_task_id].get('answer', '')
+        answer_hash = tasks[safe_task_id].get('answer_hash', '')
+    else:
+        answer_hash = hashlib.sha256(normalize_answer(answer).encode('utf-8')).hexdigest()
     tasks[safe_task_id] = {
         "title": title,
         "description": description,
-        "media": media,
-        "answer_hash": hashlib.sha256(normalize_answer(answer).encode('utf-8')).hexdigest(),
-        "points": task_points,
-        "enabled": enabled
+        "answer": answer_value,
+        "answer_hash": answer_hash,
+        "points": task_points
     }
     write_tasks(tasks)
     return safe_task_id
@@ -197,16 +186,41 @@ def set_game_status(status):
 def get_leaderboard():
     teams = read_teams()
     results = read_results()
+    tasks = read_tasks()
+    state = read_game_state()
     rows = []
     for team_id in teams:
-        progress = results.get(team_id, {"completed": {}, "score": 0, "finished_at": 0})
+        progress = results.get(team_id, {"completed": {}, "wrong": {}, "score": 0, "finished_at": 0})
+        finished_at = progress.get('finished_at', 0)
+        elapsed = 0
+        if finished_at > 0 and state.get('started_at', 0) > 0 and finished_at >= state.get('started_at', 0):
+            elapsed = finished_at - state.get('started_at', 0)
         rows.append({
+            "team_id": team_id,
             "team": teams[team_id]['name'],
+            "captain": teams[team_id].get('captain', ''),
+            "approved": teams[team_id].get('approved', False),
             "score": progress.get('score', 0),
             "completed": len(progress.get('completed', {})),
-            "finished_at": progress.get('finished_at', 0)
+            "total": len(tasks),
+            "wrong": sum(progress.get('wrong', {}).values()),
+            "finished_at": finished_at,
+            "elapsed": elapsed
         })
     return sorted(rows, key=lambda row: (-row['score'], row['finished_at'] if row['finished_at'] > 0 else 9999999999))
+
+def format_duration(seconds):
+    if seconds <= 0:
+        return '-'
+    seconds = int(seconds)
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    secs = seconds % 60
+    if hours > 0:
+        return str(hours) + 'ч ' + str(minutes) + 'м ' + str(secs) + 'с'
+    if minutes > 0:
+        return str(minutes) + 'м ' + str(secs) + 'с'
+    return str(secs) + 'с'
 
 def get_team_progress(team_id):
     results = read_results()
@@ -214,7 +228,7 @@ def get_team_progress(team_id):
 
 def submit_task_answer(team_id, username, task_id, answer):
     tasks = read_tasks()
-    if task_id not in tasks or not tasks[task_id].get('enabled', True):
+    if task_id not in tasks:
         return False, "Задание недоступно."
     state = read_game_state()
     if state.get('status') != 'running':
@@ -227,8 +241,7 @@ def submit_task_answer(team_id, username, task_id, answer):
     if answer_hash == tasks[task_id]['answer_hash']:
         progress['completed'][task_id] = {"user": username, "time": time.time()}
         progress['score'] = progress.get('score', 0) + int(tasks[task_id].get('points', 0))
-        enabled_tasks = [task for task in tasks if tasks[task].get('enabled', True)]
-        if len(progress['completed']) >= len(enabled_tasks):
+        if len(progress['completed']) >= len(tasks):
             progress['finished_at'] = time.time()
         results[team_id] = progress
         write_results(results)
@@ -245,14 +258,6 @@ def read_user_id(user_id):
          user_data = json.load(user_file)
          return user_data
  
-def read_user(username):
-    with open(data_directory + 'users.json', 'r') as users_file:
-        users = json.load(users_file)
-        user = users[username]
-    with open(data_directory + '/users/' + user['user_id'] + '.json', 'r') as user_file:
-         user_data = json.load(user_file)
-         return user_data
-
 def trim_active_sessions():
     current_sessions = read_active_sessions()
     del_list = []
@@ -306,7 +311,6 @@ def write_user_profile(user_id, user_data):
 
 def write_new_user(username, password):
     all_users = read_users()
-    # Set uyp user for "db"
     user_uuid = str(uuid.uuid4())
     hash_password = hashlib.sha256(password.encode('utf-8')).hexdigest()
     user_data = {
@@ -318,10 +322,8 @@ def write_new_user(username, password):
         "identity": ""
         }
 
-    # Add user to "db"             
     all_users[username] = user_data
     user_object = json.dumps(all_users, indent=4)
-    # Set user profile defaults
     user_profile_data = {
         "username": username,
         "remote_identity": "",
@@ -341,7 +343,6 @@ def write_new_user(username, password):
             ]
         }
     user_profile_object = json.dumps(user_profile_data, indent=4)
-    # Write both to disk 
     with open(data_directory + 'users.json', "w") as user_file:
         user_file.write(user_object)
         
@@ -397,7 +398,6 @@ def delete_user(username):
     os.remove(data_directory + 'users/' + user_id + '.json')
     del all_users[username]
     user_object = json.dumps(all_users, indent=4)
-    # Write both to disk 
     with open(data_directory + 'users.json', "w") as user_file:
         user_file.write(user_object)
             
@@ -410,17 +410,6 @@ def update_profile(active_session, os_environ):
     user_data['profile']['about'] = os_environ['field_about']
 
     write_user_profile(active_session['user_id'], user_data)
-
-def read_profile_user_id(user_id):
-     user_data = read_user_id(user_id)
-     return user_data
-
-def read_profile_username(username):
-     all_users = read_users()
-     user_id = all_users[username]['user_id']
-     user_data = read_user_id(user_id)
-     return user_data
-    
 
 def update_password(username, password):
     all_users = read_users()
@@ -452,21 +441,10 @@ def delete_identity(username, identity):
     with open(data_directory + 'users.json', "w") as user_file:
         user_file.write(user_object)
 
-##def process_text(text):
-##    return re.sub(' @', '', text)
-    
-    
 def get_time():
     if use_local_time == True:
         return datetime.datetime.now().strftime("%H:%M %m/%d/%Y")
     return datetime.datetime.utcnow().strftime("%H:%M %m/%d/%Y")
-
-def convert_time(time):
-    if use_local_time == True:
-        return datetime.datetime.fromtimestamp(time).strftime("%H:%M %m/%d/%Y")
-    return datetime.datetime.utcfromtimestamp(time).strftime("%H:%M %m/%d/%Y")
-
-
 
 def header(session):
     links = ['`!`[Главная`:' + page_path + '/index.mu]`!']
@@ -475,17 +453,18 @@ def header(session):
             links.append('`!`[Обзор`:' + page_path + '/manage_users.mu]`!')
             links.append('`!`[Команды`:' + page_path + '/manage_users.mu`view=teams]`!')
             links.append('`!`[Задания`:' + page_path + '/manage_users.mu`view=tasks]`!')
+            links.append('`!`[Лидерборд`:' + page_path + '/leaderboard.mu]`!')
             links.append('`!`[Участники`:' + page_path + '/manage_users.mu`view=users]`!')
         else:
             links.append('`!`[Задания`:' + page_path + '/index.mu]`!')
             links.append('`!`[Команда`:' + page_path + '/team.mu]`!')
+            links.append('`!`[Лидерборд`:' + page_path + '/leaderboard.mu]`!')
         links.append('`!`[Профиль`:' + page_path + '/my_profile.mu]`!')
         links.append('`!`[Выход`:' + page_path + '/logout.mu]`!')
     else:
         if registration_enabled:
             links.append('`!`[Регистрация`:' + page_path + '/register.mu]`!')
         links.append('`!`[Вход`:' + page_path + '/login.mu]`!')
-##    print(os.environ)
     print('#!c=0')
     print('''
 -

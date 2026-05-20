@@ -24,10 +24,36 @@ view = os.environ.get('var_view', 'overview')
 def back_link(target_view):
     return core.page_path + '/manage_users.mu`view=' + target_view + ']`!'
 
+def env_value(name, default=''):
+    return os.environ.get('field_' + name, os.environ.get('var_' + name, default))
+
+def task_env_value(name, default=''):
+    return env_value('task_' + name, env_value(name, default))
+
+def has_task_form_submission():
+    task_fields = ['task_title', 'task_description', 'task_answer', 'task_points', 'title', 'description', 'answer', 'points']
+    for name in task_fields:
+        if 'field_' + name in os.environ or 'var_' + name in os.environ:
+            return True
+    return False
+
+def render_tasks_list(tasks):
+    print('`!Задания`!')
+    print()
+    print('`!`[<Новое задание>`:' + core.page_path + '/manage_users.mu`new_task=true|view=tasks]`!')
+    print()
+    if len(tasks) == 0:
+        print('Заданий пока нет.')
+    for task_id in tasks:
+        task = tasks[task_id]
+        print('- `!' + task.get('title', task_id) + '`! | ' + str(task.get('points', 0)) + ' очков')
+        print('  ' + task.get('description', ''))
+        print('  `!`[<Редактировать>`:' + core.page_path + '/manage_users.mu`edit_task=' + task_id + '|view=tasks]`!')
+
 if 'var_game_status' in os.environ:
     core.set_game_status(os.environ['var_game_status'])
     print('Статус игры изменен: ' + os.environ['var_game_status'])
-    print('`!`[<Назад>`:' + back_link('tasks'))
+    print('`!`[<Назад>`:' + back_link('overview'))
     core.footer()
     raise SystemExit
 
@@ -40,40 +66,48 @@ if 'var_delete_task' in os.environ:
     core.footer()
     raise SystemExit
 
-if 'var_task' in os.environ and 'field_title' not in os.environ:
-    task_id = os.environ['var_task']
-    task = tasks.get(task_id, {"title": "", "description": "", "media": "", "points": 10, "enabled": True})
-    enabled_value = 'true'
-    if not task.get('enabled', True):
-        enabled_value = 'false'
-    print('`!Редактирование задания`!')
+if ('var_edit_task' in os.environ or 'var_new_task' in os.environ) and not has_task_form_submission():
+    task_id = os.environ.get('var_edit_task', '')
+    task = tasks.get(task_id, {"title": "", "description": "", "points": 10})
+    if 'var_new_task' in os.environ:
+        print('`!Новое задание`!')
+    else:
+        print('`!Редактирование задания: ' + task.get('title', task_id) + '`!')
     print()
-    print('ID: `B444`<task_id`' + task_id + '>`b')
-    print('Название: `B444`<title`' + task.get('title', '') + '>`b')
-    print('Описание: `B444`<description`' + task.get('description', '') + '>`b')
-    print('Медиа: `B444`<media`' + task.get('media', '') + '>`b')
-    print('Ответ: `B444`<answer`>`b')
-    print('Очки: `B444`<points`' + str(task.get('points', 10)) + '>`b')
-    print('Доступно true/false: `B444`<enabled`' + enabled_value + '>`b')
+    print('Название: `B444`<task_title`' + task.get('title', '') + '>`b')
+    print('Описание: `B444`<task_description`' + task.get('description', '') + '>`b')
+    print('Ответ: `B444`<task_answer`' + task.get('answer', '') + '>`b')
+    print('Очки: `B444`<task_points`' + str(task.get('points', 10)) + '>`b')
     print()
-    print('`!`[<Сохранить>`:' + core.page_path + '/manage_users.mu`task_id|title|description|media|answer|points|enabled|task=' + task_id + '|view=tasks]`!')
-    print('`Ff00`!`[<Удалить>`:' + core.page_path + '/manage_users.mu`delete_task=' + task_id + '|view=tasks]`!`f')
+    if 'var_new_task' in os.environ:
+        print('`!`[<Создать>`:' + core.page_path + '/manage_users.mu`task_title|task_description|task_answer|task_points|new_task=true|view=tasks]`!')
+    else:
+        print('`!`[<Сохранить>`:' + core.page_path + '/manage_users.mu`task_title|task_description|task_answer|task_points|edit_task=' + task_id + '|view=tasks]`!')
+        print('`Ff00`!`[<Удалить>`:' + core.page_path + '/manage_users.mu`delete_task=' + task_id + '|view=tasks]`!`f')
+    print('`!`[<К списку заданий>`:' + core.page_path + '/manage_users.mu`view=tasks]`!')
     core.footer()
     raise SystemExit
 
-if 'field_title' in os.environ:
-    enabled = os.environ.get('field_enabled', 'true') == 'true'
+if has_task_form_submission():
+    title = task_env_value('title').strip()
+    if title == '':
+        print('Название задания не может быть пустым.')
+        print('Поля формы не были переданы в страницу сохранения. Откройте форму задания заново из вкладки «Задания».')
+        print('`!`[<Назад>`:' + back_link('tasks'))
+        core.footer()
+        raise SystemExit
+    original_task_id = os.environ.get('var_edit_task', '')
+    task_id_to_save = original_task_id
     task_id = core.upsert_task(
-        os.environ.get('field_task_id', ''),
-        os.environ['field_title'],
-        os.environ['field_description'],
-        os.environ['field_media'],
-        os.environ['field_answer'],
-        os.environ['field_points'],
-        enabled
+        task_id_to_save,
+        title,
+        task_env_value('description'),
+        task_env_value('answer'),
+        task_env_value('points', '0')
     )
     print('Задание сохранено: ' + task_id)
-    print('`!`[<Назад>`:' + back_link('tasks'))
+    print()
+    render_tasks_list(core.read_tasks())
     core.footer()
     raise SystemExit
 
@@ -155,15 +189,12 @@ if 'var_create_new_user' in os.environ:
     core.footer()
     raise SystemExit
 
-print('`!Панель организатора`!')
-print()
-print('`!`[<Обзор>`:' + core.page_path + '/manage_users.mu]`! `!`[<Команды>`:' + core.page_path + '/manage_users.mu`view=teams]`! `!`[<Задания>`:' + core.page_path + '/manage_users.mu`view=tasks]`! `!`[<Участники>`:' + core.page_path + '/manage_users.mu`view=users]`!')
-print()
-
 if view == 'overview':
     print('`!Обзор`!')
     print()
     print('Статус игры: ' + state.get('status', 'preparing'))
+    print('`!`[<Подготовка>`:' + core.page_path + '/manage_users.mu`game_status=preparing]`! `!`[<Старт>`:' + core.page_path + '/manage_users.mu`game_status=running]`! `Ff00`!`[<Завершить>`:' + core.page_path + '/manage_users.mu`game_status=finished]`!`f')
+    print()
     print('Команд: ' + str(len(teams)))
     print('Заданий: ' + str(len(tasks)))
     print('Участников: ' + str(len(all_users)))
@@ -173,7 +204,7 @@ if view == 'overview':
     if len(leaderboard) == 0:
         print('Результатов пока нет.')
     for row in leaderboard:
-        print('- ' + row['team'] + ' | очки: ' + str(row['score']) + ' | заданий: ' + str(row['completed']))
+        print('- ' + row['team'] + ' | очки: ' + str(row['score']) + ' | заданий: ' + str(row['completed']) + '/' + str(row['total']) + ' | время: ' + core.format_duration(row.get('elapsed', 0)))
     core.footer()
     raise SystemExit
 
@@ -195,18 +226,7 @@ if view == 'teams':
     raise SystemExit
 
 if view == 'tasks':
-    print('`!Задания и статус игры`!')
-    print()
-    print('Текущий статус: ' + state.get('status', 'preparing'))
-    print('`!`[<Подготовка>`:' + core.page_path + '/manage_users.mu`game_status=preparing|view=tasks]`! `!`[<Старт>`:' + core.page_path + '/manage_users.mu`game_status=running|view=tasks]`! `Ff00`!`[<Завершить>`:' + core.page_path + '/manage_users.mu`game_status=finished|view=tasks]`!`f')
-    print()
-    print('`!`[<Новое задание>`:' + core.page_path + '/manage_users.mu`task=new|view=tasks]`!')
-    for task_id in tasks:
-        task = tasks[task_id]
-        status = 'доступно'
-        if not task.get('enabled', True):
-            status = 'скрыто'
-        print('- `!`[<' + task.get('title', task_id) + '>`:' + core.page_path + '/manage_users.mu`task=' + task_id + '|view=tasks]`! | ' + status + ' | ' + str(task.get('points', 0)) + ' очков')
+    render_tasks_list(tasks)
     core.footer()
     raise SystemExit
 

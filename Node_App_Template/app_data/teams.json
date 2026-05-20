@@ -9,5 +9,16 @@
         "invite_token": "ceb1c662-4576-45fc-9b94-423b85241006",
         "approved": true,
         "created_at": 1778873600.0095057
+    },
+    "8602f54a-100b-45f3-a304-483320296560": {
+        "id": "8602f54a-100b-45f3-a304-483320296560",
+        "name": "flawless",
+        "captain": "Ivan",
+        "members": [
+            "Ivan"
+        ],
+        "invite_token": "4c0f7c94-0c09-4b5b-9586-7156216cd780",
+        "approved": true,
+        "created_at": 1778946184.1935778
     }
 }

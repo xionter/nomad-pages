@@ -30,5 +30,13 @@
         "enabled": true,
         "admin": false,
         "identity": ""
+    },
+    "Ivan": {
+        "user_id": "7a302013-57e7-4797-b31d-c64af5b643a0",
+        "password": "0697d66552eb05bd33e8f36f0d7a15bb6d17c6ffb0ca1aa371b6ba393e6ae178",
+        "role": "player",
+        "enabled": true,
+        "admin": false,
+        "identity": ""
     }
 }

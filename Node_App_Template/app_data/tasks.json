@@ -2,17 +2,36 @@
     "old_tower": {
         "title": "Старая башня",
         "description": "Найдите табличку у башни и введите код, нанесенный рядом с датой постройки.",
-        "media": "Фото локации можно добавить в описание задания.",
+        "answer": "TOWER42",
         "answer_hash": "a3c9de3153f0e322c540fd753d59269fd2856d1e83e9a1f56cf6e5fc830eacf3",
-        "points": 10,
-        "enabled": true
+        "points": 10
     },
     "river_gate": {
         "title": "Речные ворота",
         "description": "Осмотрите знак у спуска к воде. Код состоит из букв и двух цифр.",
-        "media": "Фотография ориентира: river_gate.jpg",
+        "answer": "RIVER17",
         "answer_hash": "462d4e0f1b7e9629ce9f0cf8b774352d31111625c8f81a1eb050e2fae70590c9",
-        "points": 15,
-        "enabled": true
+        "points": 15
+    },
+    "3f149d19-95eb-4bda-9277-ab3c75d97399": {
+        "title": "time",
+        "description": "time is running out",
+        "answer": "timeisleft",
+        "answer_hash": "03fcd539a71b72c6f7882ab1b8244e219054f16522c150d78b170a7e553cbc8d",
+        "points": 10
+    },
+    "3cd859aa-3da1-4bdd-b96c-3c62915ada29": {
+        "title": "admin",
+        "description": "admin",
+        "answer": "admin20",
+        "answer_hash": "923b069516cea68c2d96c202447cc9a50f41e90f42ed532db0228d14e9bd91cf",
+        "points": 10
+    },
+    "064fe734-b979-4326-9193-34af6fbd16e3": {
+        "title": "WOW1000",
+        "description": "get urselft smth",
+        "answer": "easy",
+        "answer_hash": "27e88b861fa91ee1c64bbc3be6868fda14f45e1ad84b0da7caf7a7d3f7d7bce1",
+        "points": 1000
     }
 }
