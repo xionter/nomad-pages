@@ -20,5 +20,27 @@
         "invite_token": "4c0f7c94-0c09-4b5b-9586-7156216cd780",
         "approved": true,
         "created_at": 1778946184.1935778
+    },
+    "ce19884c-803f-40b7-929c-e4831f07a3d3": {
+        "id": "ce19884c-803f-40b7-929c-e4831f07a3d3",
+        "name": "win",
+        "captain": "капитан",
+        "members": [
+            "капитан"
+        ],
+        "invite_token": "fe448da7-e191-4c37-97e2-79a82cda8add",
+        "approved": true,
+        "created_at": 1779949136.7179067
+    },
+    "7a9918b5-e386-4a35-8b0f-21fa3b217022": {
+        "id": "7a9918b5-e386-4a35-8b0f-21fa3b217022",
+        "name": "Winners",
+        "captain": "ivan_cap",
+        "members": [
+            "ivan_cap"
+        ],
+        "invite_token": "41d9869c-9f97-4b25-8fef-626cab9eefd3",
+        "approved": false,
+        "created_at": 1779949542.8714995
     }
 }

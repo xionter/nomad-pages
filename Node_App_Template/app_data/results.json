@@ -30,5 +30,16 @@
         "wrong": {},
         "score": 1010,
         "finished_at": 0
+    },
+    "ce19884c-803f-40b7-929c-e4831f07a3d3": {
+        "completed": {
+            "old_tower": {
+                "user": "капитан",
+                "time": 1779949200.6421826
+            }
+        },
+        "wrong": {},
+        "score": 10,
+        "finished_at": 0
     }
 }

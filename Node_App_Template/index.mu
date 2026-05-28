@@ -15,7 +15,7 @@ if 'remote_identity' in os.environ:
 
 current_session = core.get_current_session(os.environ['link_id'])
 core.trim_active_sessions()
-core.header(current_session)
+core.header(current_session, 'home')
 
 if not current_session:
     print(core.heading('Платформа городского квеста'))
@@ -145,11 +145,9 @@ print()
 for task_id in tasks:
     task = tasks[task_id]
     done = task_id in progress.get('completed', {})
-    marker = '[ ]'
-    if done:
-        marker = '[x]'
     task_color = core.color_success if done else core.color_primary
-    print(marker + ' ' + core.action(task['title'], core.page_path + '/index.mu`task=' + task_id, task_color) + ' - ' + str(task.get('points', 0)) + ' очков')
+    task_status = core.status_badge('выполнено', core.color_success) if done else core.status_badge('открыто', core.color_secondary)
+    print(task_status + ' ' + core.action(task['title'], core.page_path + '/index.mu`task=' + task_id, task_color) + ' - ' + str(task.get('points', 0)) + ' очков')
     print('    ' + task['description'])
 
 if progress.get('finished_at', 0) > 0:

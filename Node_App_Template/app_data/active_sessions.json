@@ -1,14 +1,8 @@
 {
-    "e4a1654d47765af004fdb5a97da35f9a": {
-        "user_id": "832ddda1-c3d2-4b8f-907d-1dab50f6cf90",
-        "username": "admin",
-        "role": "organizer",
-        "time": 1779298133.3155408
-    },
-    "ccfc3f36f4bd582096324ba2b9842d13": {
-        "user_id": "832ddda1-c3d2-4b8f-907d-1dab50f6cf90",
-        "username": "admin",
-        "role": "organizer",
-        "time": 1779298574.9620569
+    "1728dc4409d795847bee3e85491992a1": {
+        "user_id": "40835640-0d4c-45ad-8e0f-ff5209576256",
+        "username": "\u043a\u0430\u043f\u0438\u0442\u0430\u043d",
+        "role": "player",
+        "time": 1779949191.4646351
     }
 }

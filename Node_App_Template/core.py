@@ -19,6 +19,7 @@ color_warning = 'fc5'
 color_danger = 'f55'
 color_dim = '66a'
 color_input_bg = '224'
+color_nav_active = 'fc5'
 
 use_local_time = False
 registration_enabled = True
@@ -41,13 +42,21 @@ def subheading(text):
     return fg(strong(text), color_secondary)
 
 def muted(text):
-    return '`g70' + text + '`f'
+    return '`g' + text + '`f'
 
 def status_badge(text, color=color_secondary):
     return '`F000`B' + color + ' ' + text + ' `b`f'
 
 def action(label, target, color=color_primary):
     return '`F' + color + '`!`[<' + label + '>`:' + target + ']`!`f'
+
+def active_action(label, target, color=color_nav_active):
+    return '`F000`B' + color + '`!`[< ' + label + ' >`:' + target + ']`!`b`f'
+
+def nav_action(label, target, key, active_key, color=color_secondary):
+    if key == active_key:
+        return active_action(label, target)
+    return action(label, target, color)
 
 def danger_action(label, target):
     return action(label, target, color_danger)
@@ -495,25 +504,27 @@ def get_time():
         return datetime.datetime.now().strftime("%H:%M %m/%d/%Y")
     return datetime.datetime.utcnow().strftime("%H:%M %m/%d/%Y")
 
-def header(session):
-    links = [action('Главная', page_path + '/index.mu')]
+def header(session, active_key='home'):
+    links = []
     if session:
         if is_organizer(session):
-            links.append(action('Обзор', page_path + '/manage_users.mu', color_secondary))
-            links.append(action('Команды', page_path + '/manage_users.mu`view=teams', color_secondary))
-            links.append(action('Задания', page_path + '/manage_users.mu`view=tasks', color_secondary))
-            links.append(action('Лидерборд', page_path + '/leaderboard.mu', color_secondary))
-            links.append(action('Участники', page_path + '/manage_users.mu`view=users', color_secondary))
+            links.append(nav_action('Главная', page_path + '/index.mu', 'home', active_key))
+            links.append(nav_action('Обзор', page_path + '/manage_users.mu', 'overview', active_key))
+            links.append(nav_action('Команды', page_path + '/manage_users.mu`view=teams', 'teams', active_key))
+            links.append(nav_action('Задания', page_path + '/manage_users.mu`view=tasks', 'tasks', active_key))
+            links.append(nav_action('Лидерборд', page_path + '/leaderboard.mu', 'leaderboard', active_key))
+            links.append(nav_action('Участники', page_path + '/manage_users.mu`view=users', 'users', active_key))
         else:
-            links.append(action('Задания', page_path + '/index.mu', color_secondary))
-            links.append(action('Команда', page_path + '/team.mu', color_secondary))
-            links.append(action('Лидерборд', page_path + '/leaderboard.mu', color_secondary))
-        links.append(action('Профиль', page_path + '/my_profile.mu', color_warning))
+            links.append(nav_action('Задания', page_path + '/index.mu', 'home', active_key))
+            links.append(nav_action('Команда', page_path + '/team.mu', 'team', active_key))
+            links.append(nav_action('Лидерборд', page_path + '/leaderboard.mu', 'leaderboard', active_key))
+        links.append(nav_action('Профиль', page_path + '/my_profile.mu', 'profile', active_key, color_warning))
         links.append(action('Выход', page_path + '/logout.mu', color_danger))
     else:
+        links.append(nav_action('Главная', page_path + '/index.mu', 'home', active_key))
         if registration_enabled:
-            links.append(action('Регистрация', page_path + '/register.mu', color_secondary))
-        links.append(action('Вход', page_path + '/login.mu', color_warning))
+            links.append(nav_action('Регистрация', page_path + '/register.mu', 'register', active_key))
+        links.append(nav_action('Вход', page_path + '/login.mu', 'login', active_key, color_warning))
     print('#!c=0')
     print('#!fg=ddd')
     print('#!bg=000')

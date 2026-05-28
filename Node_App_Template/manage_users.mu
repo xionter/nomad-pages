@@ -7,7 +7,8 @@ if 'link_id' not in os.environ:
     os.environ['link_id'] = 'local_test'
 
 current_session = core.get_current_session(os.environ['link_id'])
-core.header(current_session)
+view = os.environ.get('var_view', 'overview')
+core.header(current_session, view)
 
 if not current_session or not core.is_organizer(current_session):
     print('Доступ разрешен только организатору.')
@@ -19,7 +20,6 @@ all_users = core.read_users()
 teams = core.read_teams()
 tasks = core.read_tasks()
 state = core.read_game_state()
-view = os.environ.get('var_view', 'overview')
 
 def env_value(name, default=''):
     return os.environ.get('field_' + name, os.environ.get('var_' + name, default))
@@ -189,8 +189,12 @@ if 'var_create_new_user' in os.environ:
 if view == 'overview':
     print(core.heading('Обзор'))
     print()
-    print('Статус игры: ' + core.status_badge(state.get('status', 'preparing'), core.color_warning))
-    print(core.action('Подготовка', core.page_path + '/manage_users.mu`game_status=preparing') + ' ' + core.action('Старт', core.page_path + '/manage_users.mu`game_status=running', core.color_success) + ' ' + core.danger_action('Завершить', core.page_path + '/manage_users.mu`game_status=finished'))
+    current_status = state.get('status', 'preparing')
+    print('Статус игры: ' + core.status_badge(current_status, core.color_warning))
+    preparing_action = core.active_action('Подготовка', core.page_path + '/manage_users.mu`game_status=preparing') if current_status == 'preparing' else core.action('Подготовка', core.page_path + '/manage_users.mu`game_status=preparing')
+    running_action = core.active_action('Старт', core.page_path + '/manage_users.mu`game_status=running', core.color_success) if current_status == 'running' else core.action('Старт', core.page_path + '/manage_users.mu`game_status=running', core.color_success)
+    finished_action = core.active_action('Завершить', core.page_path + '/manage_users.mu`game_status=finished', core.color_danger) if current_status == 'finished' else core.danger_action('Завершить', core.page_path + '/manage_users.mu`game_status=finished')
+    print(preparing_action + ' ' + running_action + ' ' + finished_action)
     print()
     print('Команд: ' + core.fg(str(len(teams)), core.color_secondary))
     print('Заданий: ' + core.fg(str(len(tasks)), core.color_secondary))
@@ -215,8 +219,8 @@ if view == 'teams':
         status = 'ожидает допуска'
         if team.get('approved', False):
             status = 'допущена'
-        status_color = core.color_success if team.get('approved', False) else core.color_warning
-        print('- ' + core.fg(team['name'], core.color_secondary) + ' | ' + core.status_badge(status, status_color))
+        team_name = team.get('name', team_id)
+        print('  Название: ' + team_name + ' | статус: ' + status)
         print('  Капитан: ' + team['captain'] + ' | участники: ' + ', '.join(team.get('members', [])))
         print('  Токен: ' + core.fg(team.get('invite_token', ''), core.color_warning))
         print('  ' + core.action('Допустить', core.page_path + '/manage_users.mu`approved=true|team=' + team_id + '|view=teams', core.color_success) + ' ' + core.danger_action('Отозвать', core.page_path + '/manage_users.mu`approved=false|team=' + team_id + '|view=teams'))

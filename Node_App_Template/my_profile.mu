@@ -9,7 +9,7 @@ if 'link_id' not in os.environ:
 
 current_session = core.get_current_session(os.environ['link_id'])
 
-core.header(current_session)
+core.header(current_session, 'profile')
 
 if current_session:
     if 'var_save' not in os.environ and 'var_new_password' not in os.environ:

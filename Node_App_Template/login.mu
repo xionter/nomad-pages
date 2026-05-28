@@ -9,7 +9,7 @@ if 'link_id' not in os.environ:
 
 current_session = core.get_current_session(os.environ['link_id'])
 
-core.header(current_session)
+core.header(current_session, 'login')
 
 if not current_session:
     if 'field_username' in os.environ and 'field_password' in os.environ and not current_session:

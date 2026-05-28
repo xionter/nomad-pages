@@ -9,7 +9,7 @@ if 'link_id' not in os.environ:
 
 current_session = core.get_current_session(os.environ['link_id'])
 
-core.header(current_session)
+core.header(current_session, 'register')
 
 if not current_session:
     # We have registration variables, proceed to regisater user
@@ -63,4 +63,3 @@ if current_session:
         print(core.action('К заданиям', core.page_path + '/index.mu'))
 
 core.footer()
-

@@ -8,7 +8,7 @@ if 'link_id' not in os.environ:
 
 current_session = core.get_current_session(os.environ['link_id'])
 
-core.header(current_session)
+core.header(current_session, 'profile')
 
 if current_session:
     if 'remote_identity' in os.environ and 'var_add_identity' not in os.environ and 'var_delete_identity' not in os.environ:

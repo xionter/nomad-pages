@@ -7,7 +7,7 @@ if 'link_id' not in os.environ:
     os.environ['link_id'] = 'local_test'
 
 current_session = core.get_current_session(os.environ['link_id'])
-core.header(current_session)
+core.header(current_session, 'leaderboard')
 
 if not current_session:
     print('Для просмотра таблицы результатов нужно войти в систему.')

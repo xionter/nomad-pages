@@ -38,5 +38,21 @@
         "enabled": true,
         "admin": false,
         "identity": ""
+    },
+    "\u043a\u0430\u043f\u0438\u0442\u0430\u043d": {
+        "user_id": "40835640-0d4c-45ad-8e0f-ff5209576256",
+        "password": "b169420c0c8d3e440e74093613157b72903c12353dde511bf97782303eaff56e",
+        "role": "player",
+        "enabled": true,
+        "admin": false,
+        "identity": ""
+    },
+    "ivan_cap": {
+        "user_id": "9c836392-b8a7-4299-8f68-3e5dd7250d80",
+        "password": "b169420c0c8d3e440e74093613157b72903c12353dde511bf97782303eaff56e",
+        "role": "player",
+        "enabled": true,
+        "admin": false,
+        "identity": ""
     }
 }
