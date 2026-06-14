@@ -42,5 +42,17 @@
         "invite_token": "41d9869c-9f97-4b25-8fef-626cab9eefd3",
         "approved": false,
         "created_at": 1779949542.8714995
+    },
+    "b82d8c4e-3884-4d9e-b10e-fdbd541b747b": {
+        "id": "b82d8c4e-3884-4d9e-b10e-fdbd541b747b",
+        "name": "yac",
+        "captain": "Nezeri",
+        "members": [
+            "Nezeri",
+            "adada"
+        ],
+        "invite_token": "b97d6422-ddbc-437e-a23d-2a526514eaeb",
+        "approved": true,
+        "created_at": 1781361061.345612
     }
 }

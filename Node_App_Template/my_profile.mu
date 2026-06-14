@@ -3,7 +3,6 @@
 import core
 import os
 
-# Must be browsing locally, create fake link_id
 if 'link_id' not in os.environ:
     os.environ['link_id'] = 'local_test'
 
@@ -23,9 +22,8 @@ if current_session:
         print('О себе:          ' + core.field('about', user_data['profile']['about']))
         print()
         print('LXMF адрес:      ' + core.field('lxmf', user_data['profile']['lxmf']))
-
         print()
-        team_id, team = core.find_user_team(current_session['username'])
+        team = core.find_user_team(current_session['username'])[1]
         if team:
             print('Команда: ' + core.fg(team['name'], core.color_secondary) + ' | капитан: ' + team['captain'])
             print('Токен приглашения: ' + core.fg(team['invite_token'], core.color_warning))
@@ -42,7 +40,7 @@ if current_session:
         core.update_password(current_session['username'], os.environ['field_password'])
         print(core.fg('Пароль обновлен.', core.color_success))
         print(core.action('Назад', core.page_path + '/my_profile.mu'))
-    
+
 if not current_session:
     print('Требуется вход в систему.')
     print(core.action('На главную', core.page_path + '/index.mu'))

@@ -24,7 +24,7 @@ if core.is_organizer(current_session):
 username = current_session['username']
 
 if 'field_team_name' in os.environ:
-    team_id, team = core.create_team(username, os.environ['field_team_name'])
+    team = core.create_team(username, os.environ['field_team_name'])[1]
     print(core.heading('Команда создана'))
     print()
     print('Название: ' + core.fg(team['name'], core.color_secondary))
@@ -35,8 +35,14 @@ if 'field_team_name' in os.environ:
     core.footer()
     raise SystemExit
 
+invite_token = ''
 if 'var_invite' in os.environ:
-    team_id, team = core.join_team_by_token(username, os.environ['var_invite'])
+    invite_token = os.environ['var_invite']
+if 'field_invite' in os.environ:
+    invite_token = os.environ['field_invite']
+
+if invite_token != '':
+    team = core.join_team_by_token(username, invite_token)[1]
     if team:
         print('Вы добавлены в команду: ' + core.fg(core.strong(team['name']), core.color_success))
     else:
@@ -56,7 +62,9 @@ if not team:
     print('Название команды: ' + core.field('team_name'))
     print(core.action('Создать команду', core.page_path + '/team.mu`team_name', core.color_warning))
     print()
-    print('Если вы участник, откройте ссылку приглашения от капитана.')
+    print('Если вы участник, введите токен приглашения от капитана:')
+    print('Токен команды: ' + core.field('invite'))
+    print(core.action('Вступить в команду', core.page_path + '/team.mu`invite', core.color_warning))
     core.footer()
     raise SystemExit
 

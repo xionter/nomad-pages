@@ -3,7 +3,6 @@
 import core
 import os
 
-# Must be browsing locally, create fake link_id
 if 'link_id' not in os.environ:
     os.environ['link_id'] = 'local_test'
 
@@ -21,5 +20,5 @@ if not current_session:
     print('Вы уже вышли из системы.')
 
 print(core.action('Продолжить', core.page_path + '/index.mu'))
-    
+
 core.footer()

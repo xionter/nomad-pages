@@ -54,5 +54,21 @@
         "enabled": true,
         "admin": false,
         "identity": ""
+    },
+    "Nezeri": {
+        "user_id": "4c305ece-184b-4256-a69e-89cea126e24b",
+        "password": "ce2914127f5f6f4ba587d4fb215b15989afbc45fba8705e484d9dae4fd636b27",
+        "role": "player",
+        "enabled": true,
+        "admin": false,
+        "identity": ""
+    },
+    "adada": {
+        "user_id": "dc65bf0f-deaf-422e-9fe7-6d86602cc050",
+        "password": "0697d66552eb05bd33e8f36f0d7a15bb6d17c6ffb0ca1aa371b6ba393e6ae178",
+        "role": "player",
+        "enabled": true,
+        "admin": false,
+        "identity": ""
     }
 }

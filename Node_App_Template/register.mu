@@ -3,7 +3,6 @@
 import core
 import os
 
-# Must be browsing locally, create fake link_id
 if 'link_id' not in os.environ:
     os.environ['link_id'] = 'local_test'
 
@@ -12,8 +11,7 @@ current_session = core.get_current_session(os.environ['link_id'])
 core.header(current_session, 'register')
 
 if not current_session:
-    # We have registration variables, proceed to regisater user
-    if 'field_username' in os.environ and 'field_password' in os.environ and 'field_password2' in os.environ and not current_session:
+    if 'field_username' in os.environ and 'field_password' in os.environ and 'field_password2' in os.environ:
         try:
             core.read_users()[os.environ['field_username']]
             print(core.fg('Имя пользователя уже занято.', core.color_danger))
@@ -37,8 +35,6 @@ if not current_session:
                     core.write_new_user(os.environ['field_username'], os.environ['field_password'])
                 except Exception as e:
                     print(str(e))
-        
-    # No registration variables, show sign up page.
     else:
         if core.registration_enabled:
             print(core.heading('Регистрация игрока'))
@@ -57,9 +53,8 @@ if not current_session:
             print(core.fg('Регистрация отключена организатором.', core.color_danger))
             print(core.action('Назад', core.page_path + '/index.mu'))
 
-    
 if current_session:
-        print('Вы уже зарегистрированы и вошли в систему.')
-        print(core.action('К заданиям', core.page_path + '/index.mu'))
+    print('Вы уже зарегистрированы и вошли в систему.')
+    print(core.action('К заданиям', core.page_path + '/index.mu'))
 
 core.footer()
